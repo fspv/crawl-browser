@@ -1,0 +1,18 @@
+{
+  "name": "crawl-browser-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Chrome crawler instance",
+  "scripts": {
+    "test": "playwright test",
+    "test:watch": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "playwright": "^1.40.1"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.33.0"
+  }
+}
