@@ -38,7 +38,7 @@ test.describe('Extension Loading', () => {
     );
     
     // We expect at least some extension targets (uBlock, cookie bypass, etc)
-    console.log('Extension targets found:', extensionTargets.length);
+    console.log('Extension targets found:', JSON.stringify(extensionTargets));
     expect(extensionTargets.length).toBeGreaterThan(0);
   });
 

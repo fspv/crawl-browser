@@ -25,6 +25,9 @@ RUN apt-get install -y wget socat procps netcat-openbsd net-tools iproute2 gnupg
     --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update
+RUN apt-get install -y chromium
+RUN apt-get install -y jq
 
 # Create a non-root user
 RUN groupadd -r chromiumuser && useradd -u 1000 -rm -g chromiumuser -G audio,video chromiumuser
@@ -58,6 +61,12 @@ RUN curl -L -o /tmp/ublock.zip "${UBLOCK_URL}" && \
 RUN curl -L -o /tmp/bpc.zip "${BPC_URL}" && \
     unzip /tmp/bpc.zip -d /tmp/chrome/extensions/bpc && \
     rm /tmp/bpc.zip
+
+RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && LATEST_CHROME_URL=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url') && wget -N "$LATEST_CHROME_URL" -P ~/
+RUN unzip ~/chrome-linux64.zip -d ~/
+RUN mv ~/chrome-linux64 ~/chrome-for-testing
+RUN chmod +x ~/chrome-for-testing
+RUN rm ~/chrome-linux64.zip
 
 ENV DBUS_SESSION_BUS_ADDRESS autolaunch:
 

@@ -10,7 +10,7 @@ module.exports = defineConfig({
   reporter: [
     ['html', { outputFolder: '/app/test-results/reports', open: 'never' }],
     ['json', { outputFile: '/app/test-results/results.json' }],
-    ['list']
+    ['line', { printSteps: true }]
   ],
 
   use: {

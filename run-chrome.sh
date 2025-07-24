@@ -9,12 +9,15 @@ dbus-daemon --system --fork --print-address 1 > /tmp/dbus-session-addr.txt
 
 export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-session-addr.txt)
 
-DISPLAY=:1 google-chrome \
+# https://winaero.com/google-releases-chrome-137-with-new-features-and-security-enhancements/#Removal_of_--load-extension_CLI_Flag
+# DISPLAY=:1 google-chrome \
+DISPLAY=:1 ~/chrome-for-testing/chrome \
     --disable-gpu \
     --no-default-browser-check \
     --no-first-run \
     --disable-3d-apis \
     --disable-dev-shm-usage \
+    --disable-features=DisableLoadExtensionCommandLineSwitch \
     --load-extension=/tmp/chrome/extensions/isdcac,/tmp/chrome/extensions/ublock,/tmp/chrome/extensions/bpc/bypass-paywalls-chrome-clean-master \
     --remote-debugging-address=0.0.0.0 \
     --remote-debugging-port=59222 \

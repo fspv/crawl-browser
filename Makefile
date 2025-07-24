@@ -46,7 +46,7 @@ build: ## Build the main crawler image and test runner image
 
 test: build ## Run all tests
 	@echo "Running tests..."
-	$(TEST_COMPOSE) up --abort-on-container-exit --exit-code-from test-runner
+	$(TEST_COMPOSE) up --abort-on-container-exit --build --exit-code-from test-runner
 	$(TEST_COMPOSE) down
 
 test-watch: build ## Run tests in watch mode (for development)

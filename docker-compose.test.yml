@@ -28,6 +28,7 @@ services:
       - CDP_ENDPOINT=http://crawl-browser:9222
       - TEST_TIMEOUT=60000
       - NODE_ENV=test
+      - DEBUG=pw:api
     volumes:
       - ./test-results:/app/test-results
       - ./tests:/app/tests:ro
