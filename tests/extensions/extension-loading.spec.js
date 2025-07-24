@@ -50,7 +50,7 @@ test.describe('Extension Loading', () => {
 
   test('uBlock Origin is active', async () => {
     // Navigate to a page with known ads
-    await client.Page.navigate({ url: 'https://httpbin.org/html' });
+    await client.Page.navigate({ url: 'https://httpi.dev/html' });
     
     await client.Page.loadEventFired();
     
