@@ -41,12 +41,11 @@ test.describe('Extension Loading', () => {
     console.log('Extension targets found:', JSON.stringify(extensionTargets));
     expect(extensionTargets.length).toBeGreaterThan(0);
     
-    // Check specifically for Bypass Paywalls Clean Options extension
-    const bypassPaywallsExtension = extensionTargets.find(t => 
-      t.title === 'Bypass Paywalls Clean Options'
+    const ext = extensionTargets.find(t => 
+      t.title === 'MetaMask Offscreen Page'
     );
     
-    expect(bypassPaywallsExtension).toBeDefined();
+    expect(ext).toBeDefined();
   });
 
   test('uBlock Origin is active', async () => {
