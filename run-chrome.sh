@@ -82,6 +82,7 @@ DISPLAY=:1 chrome-for-testing \
     --disable-gpu \
     --no-default-browser-check \
     --no-first-run \
+    --no-sandbox \
     --disable-3d-apis \
     --disable-dev-shm-usage \
     --disable-features=DisableLoadExtensionCommandLineSwitch \
