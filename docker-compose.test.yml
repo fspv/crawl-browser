@@ -8,6 +8,8 @@ services:
     ports:
       - "9222:9222"  # Chrome DevTools Protocol
       - "7900:7900"  # noVNC (optional for debugging)
+    environment:
+      - CHROME_EXTENSIONS=bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master
     networks:
       - test-network
     healthcheck:

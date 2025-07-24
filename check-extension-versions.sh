@@ -43,16 +43,6 @@ else
     OUTDATED=1
 fi
 
-# Check Bypass Paywalls Clean (limited check - just verify URL is accessible)
-echo -n "Bypass Paywalls Clean: "
-if curl -s -L --head "$CURRENT_BPC_URL" | head -1 | grep -q "200\|302"; then
-    echo -e "${GREEN}✓ URL accessible${NC}"
-    echo "  Note: Cannot automatically check for newer versions on GitFlic"
-else
-    echo -e "${RED}✗ URL not accessible${NC}"
-    OUTDATED=1
-fi
-
 echo "=============================="
 
 if [ "$OUTDATED" -eq 1 ]; then

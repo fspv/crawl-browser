@@ -4,10 +4,8 @@ FROM debian:bullseye-slim
 # Define extension URLs as build arguments
 ARG CURRENT_ISDCAC="v1.1.4"
 ARG CURRENT_UBLOCK="uBOLite_2025.718.1921"
-ARG CURRENT_BPC_URL="https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
 ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
 ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/${CURRENT_UBLOCK}.chromium.mv3.zip
-ARG BPC_URL=${CURRENT_BPC_URL}
 
 RUN apt-get update
 RUN apt-get install -y curl
@@ -68,10 +66,6 @@ RUN curl -L -o /tmp/ublock.zip "${UBLOCK_URL}" && \
     unzip /tmp/ublock.zip -d /tmp/chrome/extensions/ublock && \
     rm /tmp/ublock.zip
 
-# Download and unzip Bypass Paywall Clean
-RUN curl -L -o /tmp/bpc.zip "${BPC_URL}" && \
-    unzip /tmp/bpc.zip -d /tmp/chrome/extensions/bpc && \
-    rm /tmp/bpc.zip
 
 
 RUN groupadd -r chromiumuser && useradd -u 1000 -rm -g chromiumuser -G audio,video chromiumuser
