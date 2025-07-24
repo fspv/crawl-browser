@@ -11,8 +11,6 @@ RUN apt-get update \
     --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
-# RUN mkdir -p /etc/chromium/policies/managed/
-# RUN echo '{"ExtensionInstallForcelist": ["edibdbjcniadpccecjdfdjjppcpchdlm"]}' > /etc/chromium/policies/managed/policy.json
 
 # Create a non-root user
 RUN groupadd -r chromiumuser && useradd -u 1000 -rm -g chromiumuser -G audio,video chromiumuser
