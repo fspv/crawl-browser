@@ -101,4 +101,7 @@ ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 
 RUN x11vnc -storepasswd 123 /tmp/vnc-password
 
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=15 \
+  CMD curl -f http://localhost:9222/json/version | grep -q 'Browser'
+
 ENTRYPOINT ["/tmp/run-chrome.sh"]

@@ -10,34 +10,16 @@ services:
       - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
     networks:
       - test-network
-    healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://localhost:9222/json/version | grep -q 'Browser'"]
-      interval: 5s
-      timeout: 5s
-      retries: 15
-      start_period: 30s
   crawl-browser-test-run-without-extra-extensions:
     build:
       context: .
       dockerfile: Dockerfile
-    healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://localhost:9222/json/version | grep -q 'Browser'"]
-      interval: 5s
-      timeout: 5s
-      retries: 15
-      start_period: 30s
   crawl-browser-test-run-with-one-extension:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       - justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
-    healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://localhost:9222/json/version | grep -q 'Browser'"]
-      interval: 5s
-      timeout: 5s
-      retries: 15
-      start_period: 30s
   test-runner:
     build:
       context: ./tests

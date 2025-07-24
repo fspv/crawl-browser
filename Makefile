@@ -5,7 +5,7 @@
 CONTAINER_RUNTIME ?= docker
 ifeq ($(CONTAINER_RUNTIME),podman)
     CONTAINER_CMD := podman
-    COMPOSE_CMD := podman-compose
+    COMPOSE_CMD := podman-compose --podman-build-args='--format docker'
 else
     CONTAINER_CMD := docker
     COMPOSE_CMD := docker compose
