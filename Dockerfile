@@ -7,6 +7,10 @@ ARG CURRENT_UBLOCK="uBOLite_2025.718.1921"
 ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
 ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/${CURRENT_UBLOCK}.chromium.mv3.zip
 
+# Hardcoded Chrome version
+ARG CHROME_VERSION="138.0.7204.168"
+ARG CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-linux64.zip"
+
 RUN apt-get update
 RUN apt-get install -y curl
 
@@ -46,7 +50,20 @@ RUN apt-get install -y google-chrome-stable \
     libxss1 \
     --no-install-recommends
 
-RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && LATEST_CHROME_URL=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url') && wget -N "$LATEST_CHROME_URL" -P /tmp/
+# Verify this is still the latest version
+RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && \
+    LATEST_VERSION=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.version') && \
+    echo "Latest Chrome version: $LATEST_VERSION" && \
+    echo "Hardcoded Chrome version: $CHROME_VERSION" && \
+    if [ "$LATEST_VERSION" != "$CHROME_VERSION" ]; then \
+        echo "ERROR: Chrome version mismatch! Latest is $LATEST_VERSION but using $CHROME_VERSION" && \
+        echo "Please update the CHROME_VERSION in the Dockerfile" && \
+        exit 1; \
+    fi && \
+    echo "Chrome version check passed: $CHROME_VERSION is the latest"
+
+# Download the specific Chrome version
+RUN wget -N "$CHROME_URL" -P /tmp/
 RUN unzip /tmp/chrome-linux64.zip -d /tmp/
 RUN mv /tmp/chrome-linux64 /tmp/chrome-for-testing
 RUN rm /tmp/chrome-linux64.zip
@@ -80,7 +97,7 @@ RUN chmod +x /tmp/run-chrome.sh
 
 USER chromiumuser
 
-ENV DBUS_SESSION_BUS_ADDRESS autolaunch:
+ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 
 RUN x11vnc -storepasswd 123 /tmp/vnc-password
 
