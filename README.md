@@ -67,6 +67,18 @@ CHROME_EXTENSIONS="alias1|download_url1[|extract_folder1][,alias2|download_url2[
    environment:
      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
    ```
+### Additional command line arguments
+
+You can add additional argument to the chrome binary like this:
+
+```
+services:
+  crawl-browser:
+    image: nuhotetotniksvoboden/crawl-browser:latest
+    command:
+      - --proxy-server=http://proxy.mydomain.com:1081
+      - --proxy-bypass-list=.mydomain.com
+```
 
 ### Access Points
 
