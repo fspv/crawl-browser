@@ -1,6 +1,6 @@
 # Chrome Crawler Docker Image
 
-A Docker image with Chrome configured for web crawling, including ad blocking, cookie banner bypass, and paywall circumvention.
+A Docker image with Chrome configured for web crawling, including ad blocking, cookie banner bypass.
 
 ## Features
 
@@ -21,30 +21,7 @@ This project includes a comprehensive test suite using Playwright and Chrome Dev
 ```bash
 # Run all tests
 make test
-
-# Run tests in watch mode (for development)
-make test-watch
-
-# Run tests with VNC debugging access
-make test-debug
-
-# Run specific test suite
-make test-specific TEST="infrastructure"
-
-# View help
-make help
 ```
-
-### Test Structure
-
-- `tests/infrastructure/` - Tests for Docker container health, Chrome configuration
-- `tests/content/` - Tests for page navigation, content extraction, error handling
-- `tests/extensions/` - Tests for extension loading and functionality
-- `tests/utils/` - Helper utilities for testing
-
-### CI/CD
-
-Tests run automatically on push/PR via GitHub Actions. Test results and screenshots are uploaded as artifacts.
 
 ### Local Development
 
