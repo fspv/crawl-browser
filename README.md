@@ -19,8 +19,6 @@ A Docker image with Chrome configured for web crawling, including ad blocking, c
 Create a `docker-compose.yml` file:
 
 ```yaml
-version: '3.8'
-
 services:
   crawl-browser:
     image: nuhotetotniksvoboden/crawl-browser:latest
