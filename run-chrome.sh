@@ -11,7 +11,8 @@ export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-session-addr.txt)
 
 # https://winaero.com/google-releases-chrome-137-with-new-features-and-security-enhancements/#Removal_of_--load-extension_CLI_Flag
 # DISPLAY=:1 google-chrome \
-DISPLAY=:1 ~/chrome-for-testing/chrome \
+# DISPLAY=:1 chromium \
+DISPLAY=:1 chrome-for-testing \
     --disable-gpu \
     --no-default-browser-check \
     --no-first-run \

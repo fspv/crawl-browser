@@ -17,35 +17,46 @@ RUN chmod +x /tmp/check-extension-versions.sh
 RUN /tmp/check-extension-versions.sh
 
 # Install dependencies
-RUN apt-get install -y wget socat procps netcat-openbsd net-tools iproute2 gnupg curl unzip dbus dbus-x11 xvfb upower x11vnc novnc python3-websockify fluxbox \
-  && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-  && apt-get update \
-  && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-    --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get install -y wget \
+    socat \
+    procps \
+    netcat-openbsd \
+    net-tools \
+    iproute2 \
+    gnupg \
+    curl \
+    unzip \
+    dbus \
+    dbus-x11 \
+    xvfb \
+    upower \
+    x11vnc \
+    novnc \
+    python3-websockify \
+    fluxbox \
+    chromium \
+    jq
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 RUN apt-get update
-RUN apt-get install -y chromium
-RUN apt-get install -y jq
+RUN apt-get install -y google-chrome-stable \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-thai-tlwg \
+    fonts-kacst \
+    fonts-freefont-ttf \
+    libxss1 \
+    --no-install-recommends
 
-# Create a non-root user
-RUN groupadd -r chromiumuser && useradd -u 1000 -rm -g chromiumuser -G audio,video chromiumuser
-
-RUN mkdir /run/dbus
-RUN chmod 777 /run/dbus
-RUN echo 01234567890123456789012345678901 > /etc/machine-id
-
-# Copy scripts before switching to non-root user
-COPY run-chrome.sh /tmp/run-chrome.sh
-RUN chmod +x /tmp/run-chrome.sh
-
-
-USER chromiumuser
+RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && LATEST_CHROME_URL=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url') && wget -N "$LATEST_CHROME_URL" -P /tmp/
+RUN unzip /tmp/chrome-linux64.zip -d /tmp/
+RUN mv /tmp/chrome-linux64 /tmp/chrome-for-testing
+RUN rm /tmp/chrome-linux64.zip
+RUN chmod +x /tmp/chrome-for-testing
+RUN ln -sf /tmp/chrome-for-testing/chrome /bin/chrome-for-testing
 
 # Create extension directory
 RUN mkdir -p /tmp/chrome/extensions
-RUN mkdir -p /tmp/chrome/profile
 
 # Download and unzip "I Still Don't Care About Cookies"
 RUN curl -L -o /tmp/isdcac.zip "${ISDCAC_URL}" && \
@@ -62,15 +73,21 @@ RUN curl -L -o /tmp/bpc.zip "${BPC_URL}" && \
     unzip /tmp/bpc.zip -d /tmp/chrome/extensions/bpc && \
     rm /tmp/bpc.zip
 
-RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && LATEST_CHROME_URL=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url') && wget -N "$LATEST_CHROME_URL" -P ~/
-RUN unzip ~/chrome-linux64.zip -d ~/
-RUN mv ~/chrome-linux64 ~/chrome-for-testing
-RUN chmod +x ~/chrome-for-testing
-RUN rm ~/chrome-linux64.zip
+
+RUN groupadd -r chromiumuser && useradd -u 1000 -rm -g chromiumuser -G audio,video chromiumuser
+RUN chown -R chromiumuser:chromiumuser /tmp/chrome
+
+RUN mkdir /run/dbus
+RUN chmod 777 /run/dbus
+RUN echo 01234567890123456789012345678901 > /etc/machine-id
+
+COPY run-chrome.sh /tmp/run-chrome.sh
+RUN chmod +x /tmp/run-chrome.sh
+
+USER chromiumuser
 
 ENV DBUS_SESSION_BUS_ADDRESS autolaunch:
 
 RUN x11vnc -storepasswd 123 /tmp/vnc-password
 
-# Set the entrypoint
 ENTRYPOINT ["/tmp/run-chrome.sh"]
