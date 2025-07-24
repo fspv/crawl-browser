@@ -34,12 +34,19 @@ test.describe('Extension Loading', () => {
     // Get all targets to see if extensions created any background pages
     const targets = await client.Target.getTargets();
     const extensionTargets = targets.targetInfos.filter(t => 
-      t.type === 'background_page' || t.url.includes('extension://')
+      t.type === 'background_page' || t.type === 'service_worker' || t.type === 'page' || t.url.includes('extension://')
     );
     
     // We expect at least some extension targets (uBlock, cookie bypass, etc)
     console.log('Extension targets found:', JSON.stringify(extensionTargets));
     expect(extensionTargets.length).toBeGreaterThan(0);
+    
+    // Check specifically for Bypass Paywalls Clean Options extension
+    const bypassPaywallsExtension = extensionTargets.find(t => 
+      t.title === 'Bypass Paywalls Clean Options'
+    );
+    
+    expect(bypassPaywallsExtension).toBeDefined();
   });
 
   test('uBlock Origin is active', async () => {
