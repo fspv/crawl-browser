@@ -81,7 +81,6 @@ clean: ## Clean up containers, images, and test results
 	@echo "Cleaning up..."
 	$(TEST_COMPOSE) down -v --remove-orphans
 	$(CONTAINER_CMD) rmi $(IMAGE_NAME):latest $(IMAGE_NAME):test 2>/dev/null || true
-	rm -rf test-results/*
 
 logs: ## Show logs from the running services
 	$(TEST_COMPOSE) logs -f
