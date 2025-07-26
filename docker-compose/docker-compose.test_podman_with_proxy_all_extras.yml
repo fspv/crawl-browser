@@ -24,7 +24,7 @@ services:
     ports:
       - "3128:3128"
     volumes:
-      - ../services/squid.conf:/etc/squid/squid.conf:ro
+      - ./services/squid.conf:/etc/squid/squid.conf:ro
 
   test-runner:
     build:
