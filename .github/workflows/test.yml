@@ -13,7 +13,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -22,32 +22,66 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Test
-        run: make test
+      - name: Install podman and podman-compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+          pip3 install podman-compose
 
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 7
+      - name: Configure podman
+        run: |
+          sudo systemctl enable --now podman.socket
+          sudo loginctl enable-linger $(whoami)
+          mkdir -p ~/.config/containers
+          cat > ~/.config/containers/registries.conf << 'EOF'
+          [registries.search]
+          registries = ['docker.io']
 
-      - name: Upload Test Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: test-results/reports/
-          retention-days: 7
+          [registries.insecure]
+          registries = []
 
-      - name: Upload Failed Test Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: failure-screenshots
-          path: test-results/test-artifacts/
-          retention-days: 7
+          [registries.block]
+          registries = []
+          EOF
+
+      - name: Test Docker - No Proxy Default
+        run: make test-docker-no-proxy-default
+
+      - name: Test Docker - No Proxy Single Extra
+        run: make test-docker-no-proxy-single-extra
+
+      - name: Test Docker - No Proxy All Extras
+        run: make test-docker-no-proxy-all-extras
+
+      - name: Test Docker - With Proxy Default
+        run: make test-docker-with-proxy-default
+
+      - name: Test Docker - With Proxy Single Extra
+        run: make test-docker-with-proxy-single-extra
+
+      - name: Test Docker - With Proxy All Extras
+        run: make test-docker-with-proxy-all-extras
+
+      - name: Test Docker - No Proxy No Sandbox
+        run: make test-docker-no-proxy-no-sandbox
+
+      - name: Test Podman - No Proxy Default
+        run: make test-podman-no-proxy-default
+
+      - name: Test Podman - No Proxy Single Extra
+        run: make test-podman-no-proxy-single-extra
+
+      - name: Test Podman - No Proxy All Extras
+        run: make test-podman-no-proxy-all-extras
+
+      - name: Test Podman - With Proxy Default
+        run: make test-podman-with-proxy-default
+
+      - name: Test Podman - With Proxy Single Extra
+        run: make test-podman-with-proxy-single-extra
+
+      - name: Test Podman - With Proxy All Extras
+        run: make test-podman-with-proxy-all-extras
 
       - name: Clean up
         if: always()
