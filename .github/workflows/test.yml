@@ -16,8 +16,13 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          # Optional: limit access to specific SSH keys
+          limit-access-to-actor: true
+          # Optional: limit access to specific users
+          limit-access-to-users: fspv
       - name: Checkout code
         uses: actions/checkout@v4
 
