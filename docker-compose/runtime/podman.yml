@@ -1,0 +1,6 @@
+# Podman-specific configuration
+services:
+  crawl-browser:
+    # No privileged flag for podman
+    security_opt:
+      - no-new-privileges

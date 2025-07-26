@@ -1,0 +1,10 @@
+# Default extensions only (uBlock Origin Lite + I Still Don't Care About Cookies)
+# No additional extensions - empty environment variable
+services:
+  crawl-browser:
+    environment:
+      - CHROME_EXTENSIONS=
+  
+  test-runner:
+    environment:
+      - HAS_METAMASK=false

@@ -1,0 +1,9 @@
+# Default extensions + all additional extensions
+services:
+  crawl-browser:
+    environment:
+      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
+  
+  test-runner:
+    environment:
+      - HAS_METAMASK=true

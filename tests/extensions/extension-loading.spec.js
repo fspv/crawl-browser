@@ -41,11 +41,18 @@ test.describe('Extension Loading', () => {
     console.log('Extension targets found:', JSON.stringify(extensionTargets));
     expect(extensionTargets.length).toBeGreaterThan(0);
     
-    const ext = extensionTargets.find(t => 
-      t.title === 'MetaMask Offscreen Page'
-    );
-    
-    expect(ext).toBeDefined();
+    // Check for MetaMask only if it's expected to be loaded
+    const hasMetaMask = process.env.HAS_METAMASK === 'true';
+    if (hasMetaMask) {
+      const ext = extensionTargets.find(t => 
+        t.title === 'MetaMask Offscreen Page'
+      );
+      
+      expect(ext).toBeDefined();
+      console.log('MetaMask extension found:', ext);
+    } else {
+      console.log('MetaMask check skipped - not configured to load');
+    }
   });
 
   test('uBlock Origin is active', async () => {

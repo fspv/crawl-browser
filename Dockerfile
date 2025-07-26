@@ -3,7 +3,7 @@ FROM debian:bullseye-slim
 
 # Define extension URLs as build arguments
 ARG CURRENT_ISDCAC="v1.1.4"
-ARG CURRENT_UBLOCK="uBOLite_2025.718.1921"
+ARG CURRENT_UBLOCK="uBOLite_2025.725.1450"
 ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
 ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/${CURRENT_UBLOCK}.chromium.mv3.zip
 

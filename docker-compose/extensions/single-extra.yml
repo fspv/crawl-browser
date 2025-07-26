@@ -1,0 +1,9 @@
+# Default extensions + one additional extension (MetaMask)
+services:
+  crawl-browser:
+    environment:
+      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip
+  
+  test-runner:
+    environment:
+      - HAS_METAMASK=true

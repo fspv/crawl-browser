@@ -1,0 +1,18 @@
+# Proxy configuration
+services:
+  crawl-browser:
+    command:
+      - "/run-chrome.sh"
+      - "--proxy-server=http://proxy:3128"
+      - "--proxy-bypass-list=localhost,127.0.0.1,test-network"
+    depends_on:
+      - proxy
+    
+  proxy:
+    image: ubuntu/squid:latest
+    networks:
+      - test-network
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./services/squid.conf:/etc/squid/squid.conf:ro
