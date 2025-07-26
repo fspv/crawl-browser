@@ -23,11 +23,16 @@ services:
   crawl-browser:
     image: nuhotetotniksvoboden/crawl-browser:latest
     ports:
+      # Optional: if you want to expose ports to you host,
+      # otherwise not needed.
       - "9222:9222"  # Chrome DevTools Protocol
       - "7900:7900"  # noVNC (optional for debugging)
-    environment:
-      # Optional: Add custom Chrome extensions
-      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
+    # Either cap_add or --no-sandbox has to be specified in docker.
+    # If you're using rootless podman this is not needed.
+    cap_add:
+      - sys_admin
+    command:
+      - --no-sandbox
 ```
 
 Then run:
