@@ -47,44 +47,44 @@ jobs:
       - name: Test Docker - No Proxy Default
         run: make test-docker-no-proxy-default
 
+      - name: Test Podman - No Proxy Default
+        run: make test-podman-no-proxy-default
+
       - name: Test Docker - No Proxy Single Extra
         run: make test-docker-no-proxy-single-extra
+
+      - name: Test Podman - No Proxy Single Extra
+        run: make test-podman-no-proxy-single-extra
 
       - name: Test Docker - No Proxy All Extras
         run: make test-docker-no-proxy-all-extras
 
+      - name: Test Podman - No Proxy All Extras
+        run: make test-podman-no-proxy-all-extras
+
       - name: Test Docker - With Proxy Default
         run: make test-docker-with-proxy-default
+
+      - name: Test Podman - With Proxy Default
+        run: make test-podman-with-proxy-default
 
       - name: Test Docker - With Proxy Single Extra
         run: make test-docker-with-proxy-single-extra
 
+      - name: Test Podman - With Proxy Single Extra
+        run: make test-podman-with-proxy-single-extra
+
       - name: Test Docker - With Proxy All Extras
         run: make test-docker-with-proxy-all-extras
+
+      - name: Test Podman - With Proxy All Extras
+        run: make test-podman-with-proxy-all-extras
 
       - name: Test Docker - No Proxy No Sandbox
         run: make test-docker-no-proxy-no-sandbox
 
       - name: Test Docker - No Proxy No Extensions
         run: make test-docker-no-proxy-no-extensions
-
-      - name: Test Podman - No Proxy Default
-        run: make test-podman-no-proxy-default
-
-      - name: Test Podman - No Proxy Single Extra
-        run: make test-podman-no-proxy-single-extra
-
-      - name: Test Podman - No Proxy All Extras
-        run: make test-podman-no-proxy-all-extras
-
-      - name: Test Podman - With Proxy Default
-        run: make test-podman-with-proxy-default
-
-      - name: Test Podman - With Proxy Single Extra
-        run: make test-podman-with-proxy-single-extra
-
-      - name: Test Podman - With Proxy All Extras
-        run: make test-podman-with-proxy-all-extras
 
       - name: Test Podman - No Proxy No Extensions
         run: make test-podman-no-proxy-no-extensions
