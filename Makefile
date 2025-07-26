@@ -47,6 +47,10 @@ test-docker-no-proxy-no-sandbox: ## Test Docker with no proxy and no sandbox
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_sandbox.yml up --abort-on-container-exit --exit-code-from test-runner --build
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_sandbox.yml down
 
+test-docker-no-proxy-no-extensions: ## Test Docker with no proxy and no extensions
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml down
+
 # Test matrix targets - Podman configurations
 test-podman-no-proxy-default: ## Test Podman with no proxy and default extensions
 	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner --build
@@ -72,6 +76,10 @@ test-podman-with-proxy-all-extras: ## Test Podman with proxy and all extra exten
 	podman-compose -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml up --abort-on-container-exit --exit-code-from test-runner --build
 	podman-compose -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml down
 
+test-podman-no-proxy-no-extensions: ## Test Podman with no proxy and no extensions
+	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml down
+
 # Convenience targets
 test: test-docker-no-proxy-default ## Run default test (docker, no proxy, default extensions)
 
@@ -83,6 +91,7 @@ test-all-docker: ## Run all Docker test configurations
 	$(MAKE) test-docker-with-proxy-single-extra
 	$(MAKE) test-docker-with-proxy-all-extras
 	$(MAKE) test-docker-no-proxy-no-sandbox
+	$(MAKE) test-docker-no-proxy-no-extensions
 
 test-all-podman: ## Run all Podman test configurations
 	$(MAKE) test-podman-no-proxy-default
@@ -91,6 +100,7 @@ test-all-podman: ## Run all Podman test configurations
 	$(MAKE) test-podman-with-proxy-default
 	$(MAKE) test-podman-with-proxy-single-extra
 	$(MAKE) test-podman-with-proxy-all-extras
+	$(MAKE) test-podman-no-proxy-no-extensions
 
 test-all: ## Run all test configurations
 	$(MAKE) test-all-docker
@@ -107,6 +117,7 @@ clean: ## Clean up containers, images, and test results
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_with_proxy_single_extra.yml down -v --remove-orphans || true
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_with_proxy_all_extras.yml down -v --remove-orphans || true
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_sandbox.yml down -v --remove-orphans || true
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml down -v --remove-orphans || true
 	# Clean up Podman test configurations
 	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_default.yml down -v --remove-orphans || true; \
 	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml down -v --remove-orphans || true; \
@@ -114,3 +125,4 @@ clean: ## Clean up containers, images, and test results
 	podman-compose -f docker-compose/docker-compose.test_podman_with_proxy_default.yml down -v --remove-orphans || true; \
 	podman-compose -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml down -v --remove-orphans || true; \
 	podman-compose -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml down -v --remove-orphans || true; \
+	podman-compose -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml down -v --remove-orphans || true; \

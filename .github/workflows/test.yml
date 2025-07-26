@@ -65,6 +65,9 @@ jobs:
       - name: Test Docker - No Proxy No Sandbox
         run: make test-docker-no-proxy-no-sandbox
 
+      - name: Test Docker - No Proxy No Extensions
+        run: make test-docker-no-proxy-no-extensions
+
       - name: Test Podman - No Proxy Default
         run: make test-podman-no-proxy-default
 
@@ -82,6 +85,9 @@ jobs:
 
       - name: Test Podman - With Proxy All Extras
         run: make test-podman-with-proxy-all-extras
+
+      - name: Test Podman - No Proxy No Extensions
+        run: make test-podman-no-proxy-no-extensions
 
       - name: Clean up
         if: always()

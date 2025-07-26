@@ -1,0 +1,37 @@
+services:
+  crawl-browser:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - "9222:9222"  # Chrome DevTools Protocol
+      - "7900:7900"  # noVNC (optional for debugging)
+    cap_add:
+      - sys_admin
+    networks:
+      - test-network
+    environment:
+      - CHROME_EXTENSIONS=
+
+  test-runner:
+    build:
+      context: ../tests
+      dockerfile: Dockerfile.tests
+    depends_on:
+      crawl-browser:
+        condition: service_healthy
+    environment:
+      - CDP_ENDPOINT=http://crawl-browser:9222
+      - TEST_TIMEOUT=60000
+      - NODE_ENV=test
+      - DEBUG=pw:api
+      - HAS_METAMASK=false
+    volumes:
+      - ../tests:/app/tests:ro
+    networks:
+      - test-network
+    command: npm test
+
+networks:
+  test-network:
+    driver: bridge
