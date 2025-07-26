@@ -6,9 +6,10 @@ services:
     ports:
       - "9222:9222"  # Chrome DevTools Protocol
       - "7900:7900"  # noVNC (optional for debugging)
+    cap_add:
+      - sys_admin
     networks:
       - test-network
-    privileged: true
     environment:
       - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
 

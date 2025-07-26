@@ -6,9 +6,10 @@ services:
     ports:
       - "9222:9222"  # Chrome DevTools Protocol
       - "7900:7900"  # noVNC (optional for debugging)
+    cap_add:
+      - sys_admin
     networks:
       - test-network
-    privileged: true
     environment:
       - CHROME_EXTENSIONS=
 
