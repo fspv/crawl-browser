@@ -10,8 +10,6 @@ services:
       - sys_admin
     networks:
       - test-network
-    environment:
-      - CHROME_EXTENSIONS=
     command:
       - "/run-chrome.sh"
       - "--proxy-server=http://proxy:3128"

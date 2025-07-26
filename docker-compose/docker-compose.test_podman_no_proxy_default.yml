@@ -8,8 +8,6 @@ services:
       - "7900:7900"  # noVNC (optional for debugging)
     networks:
       - test-network
-    environment:
-      - CHROME_EXTENSIONS=
 
   test-runner:
     build:

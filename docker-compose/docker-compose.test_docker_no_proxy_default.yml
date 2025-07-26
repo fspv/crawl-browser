@@ -10,8 +10,6 @@ services:
       - sys_admin
     networks:
       - test-network
-    environment:
-      - CHROME_EXTENSIONS=
 
   test-runner:
     build:
