@@ -6,20 +6,26 @@ services:
     ports:
       - "9222:9222"  # Chrome DevTools Protocol
       - "7900:7900"  # noVNC (optional for debugging)
-    environment:
-      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
     networks:
       - test-network
-  crawl-browser-test-run-without-extra-extensions:
-    build:
-      context: .
-      dockerfile: Dockerfile
-  crawl-browser-test-run-with-one-extension:
-    build:
-      context: .
-      dockerfile: Dockerfile
     environment:
-      - justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
+      - CHROME_EXTENSIONS=mm|https://github.com/MetaMask/metamask-extension/releases/download/v12.22.3/metamask-flask-chrome-12.22.3-flask.0.zip,bpc|https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip|bypass-paywalls-chrome-clean-master,justread|https://github.com/ZachSaucier/Just-Read/archive/master.zip|Just-Read-master
+    command:
+      - "/run-chrome.sh"
+      - "--proxy-server=http://proxy:3128"
+      - "--proxy-bypass-list=localhost,127.0.0.1,test-network"
+    depends_on:
+      - proxy
+
+  proxy:
+    image: ubuntu/squid:latest
+    networks:
+      - test-network
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./services/squid.conf:/etc/squid/squid.conf:ro
+
   test-runner:
     build:
       context: ./tests
@@ -27,17 +33,13 @@ services:
     depends_on:
       crawl-browser:
         condition: service_healthy
-      crawl-browser-test-run-without-extra-extensions:
-        condition: service_healthy
-      crawl-browser-test-run-with-one-extension:
-        condition: service_healthy
     environment:
       - CDP_ENDPOINT=http://crawl-browser:9222
       - TEST_TIMEOUT=60000
       - NODE_ENV=test
       - DEBUG=pw:api
+      - HAS_METAMASK=true
     volumes:
-      - ./test-results:/app/test-results
       - ./tests:/app/tests:ro
     networks:
       - test-network

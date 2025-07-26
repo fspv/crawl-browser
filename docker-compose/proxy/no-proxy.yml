@@ -1,3 +1,0 @@
-# No proxy configuration - empty file for compose merging
-# This file exists to maintain consistent compose command structure
-services: {}

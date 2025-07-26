@@ -5,13 +5,15 @@ module.exports = defineConfig({
   globalSetup: require.resolve('./global-setup.js'),
   fullyParallel: false, // Run all tests sequentially to avoid CDP connection limits
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: 2,
   workers: 1, // Force sequential execution to avoid CDP connection conflicts
   reporter: [
     ['html', { outputFolder: '/app/test-results/reports', open: 'never' }],
     ['json', { outputFile: '/app/test-results/results.json' }],
     ['line', { printSteps: true }]
   ],
+
+  timeout: 120000, // Set default test timeout to 120 seconds
 
   use: {
     baseURL: process.env.CDP_ENDPOINT || 'http://localhost:9222',

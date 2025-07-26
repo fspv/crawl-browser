@@ -1,4 +1,0 @@
-# Docker-specific configuration
-services:
-  crawl-browser:
-    privileged: true
