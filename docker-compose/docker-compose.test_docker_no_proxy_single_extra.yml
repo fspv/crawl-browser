@@ -1,7 +1,7 @@
 services:
   crawl-browser:
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
     ports:
       - "9222:9222"  # Chrome DevTools Protocol
@@ -15,7 +15,7 @@ services:
 
   test-runner:
     build:
-      context: ./tests
+      context: ../tests
       dockerfile: Dockerfile.tests
     depends_on:
       crawl-browser:
@@ -27,7 +27,7 @@ services:
       - DEBUG=pw:api
       - HAS_METAMASK=true
     volumes:
-      - ./tests:/app/tests:ro
+      - ../tests:/app/tests:ro
     networks:
       - test-network
     command: npm test
