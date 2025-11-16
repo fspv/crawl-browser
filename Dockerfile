@@ -1,24 +1,6 @@
-# Use a lightweight Debian-based image
 FROM debian:bullseye-slim
 
-# Define extension URLs as build arguments
-ARG CURRENT_ISDCAC="v1.1.4"
-ARG CURRENT_UBLOCK="uBOLite_2025.725.1450"
-ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
-ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/${CURRENT_UBLOCK}.chromium.mv3.zip
-
-# Hardcoded Chrome version
-ARG CHROME_VERSION="138.0.7204.168"
-ARG CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-linux64.zip"
-
 RUN apt-get update
-RUN apt-get install -y curl
-
-COPY check-extension-versions.sh /tmp/check-extension-versions.sh
-RUN chmod +x /tmp/check-extension-versions.sh
-RUN /tmp/check-extension-versions.sh
-
-# Install dependencies
 RUN apt-get install -y wget \
     socat \
     procps \
@@ -37,7 +19,9 @@ RUN apt-get install -y wget \
     python3-websockify \
     fluxbox \
     chromium \
-    jq
+    jq \
+    curl
+
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 RUN apt-get update
@@ -50,7 +34,9 @@ RUN apt-get install -y google-chrome-stable \
     libxss1 \
     --no-install-recommends
 
-# Verify this is still the latest version
+ARG CHROME_VERSION="142.0.7444.162"
+ARG CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-linux64.zip"
+
 RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && \
     LATEST_VERSION=$(echo "$LATEST_CHROME_RELEASE" | jq -r '.version') && \
     echo "Latest Chrome version: $LATEST_VERSION" && \
@@ -62,7 +48,6 @@ RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-fo
     fi && \
     echo "Chrome version check passed: $CHROME_VERSION is the latest"
 
-# Download the specific Chrome version
 RUN wget -N "$CHROME_URL" -P /tmp/
 RUN unzip /tmp/chrome-linux64.zip -d /tmp/
 RUN mv /tmp/chrome-linux64 /tmp/chrome-for-testing
@@ -70,15 +55,21 @@ RUN rm /tmp/chrome-linux64.zip
 RUN chmod +x /tmp/chrome-for-testing
 RUN ln -sf /tmp/chrome-for-testing/chrome /bin/chrome-for-testing
 
-# Create extension directory
+ARG CURRENT_ISDCAC="v1.1.8"
+ARG CURRENT_UBLOCK="2025.1110.1551"
+ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
+ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/uBOLite_${CURRENT_UBLOCK}.chromium.zip
+
+COPY check-extension-versions.sh /tmp/check-extension-versions.sh
+RUN chmod +x /tmp/check-extension-versions.sh
+RUN /tmp/check-extension-versions.sh
+
 RUN mkdir -p /tmp/chrome/extensions
 
-# Download and unzip "I Still Don't Care About Cookies"
 RUN curl -L -o /tmp/isdcac.zip "${ISDCAC_URL}" && \
     unzip /tmp/isdcac.zip -d /tmp/chrome/extensions/isdcac && \
     rm /tmp/isdcac.zip
 
-# Download and unzip uBlock Origin
 RUN curl -L -o /tmp/ublock.zip "${UBLOCK_URL}" && \
     unzip /tmp/ublock.zip -d /tmp/chrome/extensions/ublock && \
     rm /tmp/ublock.zip
