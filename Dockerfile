@@ -34,7 +34,7 @@ RUN apt-get install -y google-chrome-stable \
     libxss1 \
     --no-install-recommends
 
-ARG CHROME_VERSION="142.0.7444.162"
+ARG CHROME_VERSION="142.0.7444.175"
 ARG CHROME_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chrome-linux64.zip"
 
 RUN LATEST_CHROME_RELEASE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable') && \
@@ -56,7 +56,7 @@ RUN chmod +x /tmp/chrome-for-testing
 RUN ln -sf /tmp/chrome-for-testing/chrome /bin/chrome-for-testing
 
 ARG CURRENT_ISDCAC="v1.1.8"
-ARG CURRENT_UBLOCK="2025.1110.1551"
+ARG CURRENT_UBLOCK="2025.1116.1841"
 ARG ISDCAC_URL=https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies/releases/download/${CURRENT_ISDCAC}/ISDCAC-chrome-source.zip
 ARG UBLOCK_URL=https://github.com/uBlockOrigin/uBOL-home/releases/download/${CURRENT_UBLOCK}/uBOLite_${CURRENT_UBLOCK}.chromium.zip
 
