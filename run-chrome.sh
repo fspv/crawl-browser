@@ -24,7 +24,7 @@ download_extension() {
     # Download the extension
     if curl -L -o "/tmp/${name}.zip" "$url"; then
         # Extract the extension
-        if unzip "/tmp/${name}.zip" -d "$ext_dir"; then
+        if unzip -o "/tmp/${name}.zip" -d "$ext_dir"; then
             # If subdir is specified and exists, move contents up one level
             if [[ -n "$subdir" && -d "$ext_dir/$subdir" ]]; then
                 mv "$ext_dir/$subdir"/* "$ext_dir/"
