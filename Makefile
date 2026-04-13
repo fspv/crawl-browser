@@ -54,6 +54,13 @@ test-docker-no-proxy-no-extensions: ## Test Docker with no proxy and no extensio
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner --build
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml down
 
+test-docker-restart: ## Test Docker handles container restart correctly
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml up -d --build crawl-browser
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml run --rm test-runner npm test
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml restart crawl-browser
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml run --rm test-runner npm test
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml down
+
 # Test matrix targets - Podman configurations
 test-podman-no-proxy-default: ## Test Podman with no proxy and default extensions
 	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner --build
@@ -83,6 +90,13 @@ test-podman-no-proxy-no-extensions: ## Test Podman with no proxy and no extensio
 	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner --build
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml down
 
+test-podman-restart: ## Test Podman handles container restart correctly
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml up -d --build crawl-browser
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml run --rm test-runner npm test
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml restart crawl-browser
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml run --rm test-runner npm test
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml down
+
 # Convenience targets
 test: test-docker-no-proxy-default ## Run default test (docker, no proxy, default extensions)
 
@@ -95,6 +109,7 @@ test-all-docker: ## Run all Docker test configurations
 	$(MAKE) test-docker-with-proxy-all-extras
 	$(MAKE) test-docker-no-proxy-no-sandbox
 	$(MAKE) test-docker-no-proxy-no-extensions
+	$(MAKE) test-docker-restart
 
 test-all-podman: ## Run all Podman test configurations
 	$(MAKE) test-podman-no-proxy-default
@@ -104,6 +119,7 @@ test-all-podman: ## Run all Podman test configurations
 	$(MAKE) test-podman-with-proxy-single-extra
 	$(MAKE) test-podman-with-proxy-all-extras
 	$(MAKE) test-podman-no-proxy-no-extensions
+	$(MAKE) test-podman-restart
 
 test-all: ## Run all test configurations
 	$(MAKE) test-all-docker
@@ -121,6 +137,7 @@ clean: ## Clean up containers, images, and test results
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_with_proxy_all_extras.yml down -v --remove-orphans || true
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_sandbox.yml down -v --remove-orphans || true
 	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_no_proxy_no_extensions.yml down -v --remove-orphans || true
+	$(COMPOSE_CMD) -f docker-compose/docker-compose.test_docker_restart.yml down -v --remove-orphans || true
 	# Clean up Podman test configurations
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_default.yml down -v --remove-orphans || true; \
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml down -v --remove-orphans || true; \
@@ -129,3 +146,4 @@ clean: ## Clean up containers, images, and test results
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml down -v --remove-orphans || true; \
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml down -v --remove-orphans || true; \
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml down -v --remove-orphans || true; \
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml down -v --remove-orphans || true; \

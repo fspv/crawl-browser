@@ -1,5 +1,11 @@
 #!/bin/bash -uex
 
+cleanup() {
+    echo "Shutting down..."
+    kill 0
+    wait
+}
+trap cleanup SIGTERM SIGINT
 
 socat TCP-LISTEN:9222,fork,reuseaddr,bind=0.0.0.0 TCP:127.0.0.1:59222 &
 Xvfb :1 -screen 0 1024x768x16 -ac -nolisten tcp -nolisten unix &
@@ -97,4 +103,6 @@ DISPLAY=:1 chrome-for-testing \
     --remote-debugging-port=59222 \
     --remote-allow-origins=* \
     --user-data-dir=/tmp/chrome/user-data \
-    "$@"
+    "$@" &
+
+wait
