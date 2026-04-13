@@ -8,7 +8,6 @@ set -e
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo "Checking extension versions..."
@@ -39,7 +38,7 @@ else
     echo -e "${RED}✗ Outdated${NC}"
     echo "  Current: $CURRENT_UBLOCK"
     echo "  Latest:  $LATEST_UBLOCK"
-    echo "  New URL: https://github.com/uBlockOrigin/uBOL-home/releases/download/${LATEST_UBLOCK}/${LATEST_UBLOCK}.chromium.mv3.zip"
+    echo "  New URL: https://github.com/uBlockOrigin/uBOL-home/releases/download/${LATEST_UBLOCK}/uBOLite_${LATEST_UBLOCK}.chromium.zip"
     OUTDATED=1
 fi
 

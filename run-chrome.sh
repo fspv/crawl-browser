@@ -1,15 +1,16 @@
 #!/bin/bash -uex
 
 
-socat TCP-LISTEN:9222,fork,reuseaddr,bind=0.0.0.0 TCP:127.0.0.1:59222 & 
-Xvfb :1 -screen 0 1024x768x16 -ac -nolisten tcp -nolisten unix & 
-DISPLAY=:1 fluxbox & 
-DISPLAY=:1 x11vnc -nopw -forever -localhost -shared -rfbport 5900 -rfbportv6 5900 & 
-DISPLAY=:1 websockify -D --web=/usr/share/novnc 7900 localhost:5900 & 
+socat TCP-LISTEN:9222,fork,reuseaddr,bind=0.0.0.0 TCP:127.0.0.1:59222 &
+Xvfb :1 -screen 0 1024x768x16 -ac -nolisten tcp -nolisten unix &
+DISPLAY=:1 fluxbox &
+DISPLAY=:1 x11vnc -nopw -forever -localhost -shared -rfbport 5900 -rfbportv6 5900 &
+DISPLAY=:1 websockify -D --web=/usr/share/novnc 7900 localhost:5900 &
 
 dbus-daemon --nopidfile --nosyslog --system --fork --print-address 1 > /tmp/dbus-session-addr.txt
 
-export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-session-addr.txt)
+DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-session-addr.txt)
+export DBUS_SESSION_BUS_ADDRESS
 
 rm -rf /tmp/chrome/user-data
 mkdir -p /tmp/chrome/user-data
@@ -20,11 +21,11 @@ download_extension() {
     local name="$2"
     local subdir="$3"
     local ext_dir="/tmp/chrome/extensions/$name"
-    
+
     echo "Downloading extension $name from $url"
     rm -rf "$ext_dir"
     mkdir -p "$ext_dir"
-    
+
     # Download the extension
     if curl -L -o "/tmp/${name}.zip" "$url"; then
         # Extract the extension
@@ -59,7 +60,7 @@ if [[ -n "${CHROME_EXTENSIONS:-}" ]]; then
             ext_name="${EXT_PARTS[0]}"
             ext_url="${EXT_PARTS[1]}"
             ext_subdir="${EXT_PARTS[2]:-}"  # Optional subdir, empty if not provided
-            
+
             if download_extension "$ext_url" "$ext_name" "$ext_subdir"; then
                 if [[ -n "$EXTENSION_PATHS" ]]; then
                     EXTENSION_PATHS="$EXTENSION_PATHS,/tmp/chrome/extensions/$ext_name"
