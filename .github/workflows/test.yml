@@ -119,7 +119,7 @@ jobs:
 
       - name: Verify image
         run: |
-          docker run --rm crawl-browser:ci chrome --version
+          docker run --rm --entrypoint chrome-for-testing crawl-browser:ci --version
           docker images crawl-browser:ci
 
   deploy:

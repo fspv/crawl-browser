@@ -35,7 +35,7 @@ jobs:
 
           # Test if the image can run basic commands
           echo "Testing Chrome version in container..."
-          docker run --rm crawl-browser:monthly-check chrome --version
+          docker run --rm --entrypoint chrome-for-testing crawl-browser:monthly-check --version
 
           # Get image size for reporting
           IMAGE_SIZE=$(docker images crawl-browser:monthly-check --format "{{.Size}}")
