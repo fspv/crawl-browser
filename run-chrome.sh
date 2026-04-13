@@ -11,6 +11,9 @@ dbus-daemon --nopidfile --nosyslog --system --fork --print-address 1 > /tmp/dbus
 
 export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-session-addr.txt)
 
+rm -rf /tmp/chrome/user-data
+mkdir -p /tmp/chrome/user-data
+
 # Function to download and extract extension
 download_extension() {
     local url="$1"
@@ -19,6 +22,7 @@ download_extension() {
     local ext_dir="/tmp/chrome/extensions/$name"
     
     echo "Downloading extension $name from $url"
+    rm -rf "$ext_dir"
     mkdir -p "$ext_dir"
     
     # Download the extension
@@ -91,5 +95,5 @@ DISPLAY=:1 chrome-for-testing \
     --remote-debugging-address=0.0.0.0 \
     --remote-debugging-port=59222 \
     --remote-allow-origins=* \
-    --user-data-dir=$(mktemp -d) \
+    --user-data-dir=/tmp/chrome/user-data \
     "$@"
