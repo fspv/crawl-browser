@@ -93,6 +93,9 @@ fi
 # DISPLAY=:1 chromium \
 DISPLAY=:1 chrome-for-testing \
     --disable-gpu \
+    --disable-vulkan \
+    --disable-software-rasterizer \
+    --disable-gpu-compositing \
     --no-default-browser-check \
     --no-first-run \
     --disable-3d-apis \
