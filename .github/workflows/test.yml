@@ -49,54 +49,71 @@ jobs:
       #   uses: lhotari/action-upterm@v1
 
       - name: Test Docker - No Proxy Default
+        timeout-minutes: 3
         run: make test-docker-no-proxy-default
 
       - name: Test Podman - No Proxy Default
+        timeout-minutes: 3
         run: make test-podman-no-proxy-default
 
       - name: Test Docker - No Proxy Single Extra
+        timeout-minutes: 3
         run: make test-docker-no-proxy-single-extra
 
       - name: Test Podman - No Proxy Single Extra
+        timeout-minutes: 3
         run: make test-podman-no-proxy-single-extra
 
       - name: Test Docker - No Proxy All Extras
+        timeout-minutes: 3
         run: make test-docker-no-proxy-all-extras
 
       - name: Test Podman - No Proxy All Extras
+        timeout-minutes: 3
         run: make test-podman-no-proxy-all-extras
 
       - name: Test Docker - With Proxy Default
+        timeout-minutes: 3
         run: make test-docker-with-proxy-default
 
       - name: Test Podman - With Proxy Default
+        timeout-minutes: 3
         run: make test-podman-with-proxy-default
 
       - name: Test Docker - With Proxy Single Extra
+        timeout-minutes: 3
         run: make test-docker-with-proxy-single-extra
 
       - name: Test Podman - With Proxy Single Extra
+        timeout-minutes: 3
         run: make test-podman-with-proxy-single-extra
 
       - name: Test Docker - With Proxy All Extras
+        timeout-minutes: 3
         run: make test-docker-with-proxy-all-extras
 
       - name: Test Podman - With Proxy All Extras
+        timeout-minutes: 3
         run: make test-podman-with-proxy-all-extras
 
       - name: Test Docker - No Proxy No Sandbox
+        timeout-minutes: 3
         run: make test-docker-no-proxy-no-sandbox
 
       - name: Test Docker - No Proxy No Extensions
+        timeout-minutes: 3
         run: make test-docker-no-proxy-no-extensions
 
       - name: Test Podman - No Proxy No Extensions
+        timeout-minutes: 3
         run: make test-podman-no-proxy-no-extensions
 
       - name: Test Docker - Restart
+        timeout-minutes: 3
         run: make test-docker-restart
 
       - name: Test Podman - Restart
+        timeout-minutes: 3
         run: make test-podman-restart
 
       - name: Clean up

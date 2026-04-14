@@ -11,7 +11,6 @@ services:
     networks:
       - test-network
     command:
-      - "/run-chrome.sh"
       - "--proxy-server=http://proxy:3128"
       - "--proxy-bypass-list=localhost,127.0.0.1,test-network"
     depends_on:

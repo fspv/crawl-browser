@@ -83,8 +83,7 @@ RUN mkdir /run/dbus
 RUN chmod 777 /run/dbus
 RUN echo 01234567890123456789012345678901 > /etc/machine-id
 
-COPY run-chrome.sh /tmp/run-chrome.sh
-RUN chmod +x /tmp/run-chrome.sh
+COPY run-chrome.py /tmp/run-chrome.py
 
 USER chromiumuser
 
@@ -95,4 +94,4 @@ RUN x11vnc -storepasswd 123 /tmp/vnc-password
 HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=15 \
   CMD curl -f http://localhost:9222/json/version | grep -q 'Browser'
 
-ENTRYPOINT ["/tmp/run-chrome.sh"]
+ENTRYPOINT ["/usr/bin/python3", "/tmp/run-chrome.py"]
