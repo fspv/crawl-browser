@@ -63,35 +63,43 @@ test-docker-restart: ## Test Docker handles container restart correctly
 
 # Test matrix targets - Podman configurations
 test-podman-no-proxy-default: ## Test Podman with no proxy and default extensions
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_default.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_default.yml down
 
 test-podman-no-proxy-single-extra: ## Test Podman with no proxy and single extra extension
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml up --abort-on-container-exit --exit-code-from test-runner --build
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml down
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml up --abort-on-container-exit --exit-code-from test-runner
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_single_extra.yml down
 
 test-podman-no-proxy-all-extras: ## Test Podman with no proxy and all extra extensions
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_all_extras.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_all_extras.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_all_extras.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_all_extras.yml down
 
 test-podman-with-proxy-default: ## Test Podman with proxy and default extensions
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_with_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_default.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_default.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_default.yml down
 
 test-podman-with-proxy-single-extra: ## Test Podman with proxy and single extra extension
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_single_extra.yml down
 
 test-podman-with-proxy-all-extras: ## Test Podman with proxy and all extra extensions
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_with_proxy_all_extras.yml down
 
 test-podman-no-proxy-no-extensions: ## Test Podman with no proxy and no extensions
-	$(PODMAN_COMPOSE_CMD) --verbose -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner --build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml up --abort-on-container-exit --exit-code-from test-runner
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_no_proxy_no_extensions.yml down
 
 test-podman-restart: ## Test Podman handles container restart correctly
-	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml up -d --build crawl-browser
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml build
+	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml up -d crawl-browser
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml run --rm test-runner npm test
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml restart crawl-browser
 	$(PODMAN_COMPOSE_CMD) -f docker-compose/docker-compose.test_podman_restart.yml run --rm test-runner npm test
