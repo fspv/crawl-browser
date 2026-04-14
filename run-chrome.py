@@ -23,8 +23,34 @@ USER_DATA_DIR = "/tmp/chrome/user-data"
 EXTENSION_DIR = "/tmp/chrome/extensions"
 DEFAULT_EXTENSIONS = ("isdcac", "ublock")
 SHUTDOWN_TIMEOUT_S = 5
+XVFB_POLL_INTERVAL_S = 1.0
 
 log = logging.getLogger("run-chrome")
+
+
+async def log_stream(
+    name: str,
+    stream: Optional[asyncio.StreamReader],
+) -> None:
+    """Read lines from a stream and log them with a prefix."""
+    if stream is None:
+        return
+    while True:
+        line = await stream.readline()
+        if not line:
+            break
+        log.info("[%s] %s", name, line.decode(errors="replace").rstrip())
+
+
+def pipe_process_output(
+    name: str,
+    proc: asyncio.subprocess.Process,
+) -> list[asyncio.Task[None]]:
+    """Spawn background tasks to log a process's stdout/stderr."""
+    return [
+        asyncio.create_task(log_stream(f"{name}/out", proc.stdout)),
+        asyncio.create_task(log_stream(f"{name}/err", proc.stderr)),
+    ]
 
 
 def download_extension(url: str, name: str, subdir: str) -> Optional[str]:
@@ -79,11 +105,14 @@ def setup_extensions() -> list[str]:
                     paths.append(result)
             else:
                 log.warning(
-                    "Invalid extension spec: %s (expected: name|url[|subdir])",
+                    "Invalid extension spec: %s"
+                    " (expected: name|url[|subdir])",
                     ext_spec,
                 )
 
-    default_paths = [f"{EXTENSION_DIR}/{name}" for name in DEFAULT_EXTENSIONS]
+    default_paths = [
+        f"{EXTENSION_DIR}/{name}" for name in DEFAULT_EXTENSIONS
+    ]
     return default_paths + paths
 
 
@@ -101,10 +130,14 @@ async def terminate_process(
         return
 
     try:
-        await asyncio.wait_for(proc.wait(), timeout=SHUTDOWN_TIMEOUT_S)
+        await asyncio.wait_for(
+            proc.wait(), timeout=SHUTDOWN_TIMEOUT_S
+        )
         log.debug("pid=%d terminated gracefully", proc.pid)
     except asyncio.TimeoutError:
-        log.warning("pid=%d did not terminate, sending SIGKILL", proc.pid)
+        log.warning(
+            "pid=%d did not terminate, sending SIGKILL", proc.pid
+        )
         try:
             proc.kill()
         except ProcessLookupError:
@@ -127,13 +160,27 @@ async def start_socat() -> asyncio.subprocess.Process:
         "socat",
         "TCP-LISTEN:9222,fork,reuseaddr,bind=0.0.0.0",
         "TCP:127.0.0.1:59222",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started socat (pid=%d)", proc.pid)
     return proc
 
 
+def cleanup_stale_xvfb() -> None:
+    """Remove stale X lock and socket files from previous container runs."""
+    display_num = DISPLAY.lstrip(":")
+    lock_file = Path(f"/tmp/.X{display_num}-lock")
+    socket_file = Path(f"/tmp/.X11-unix/X{display_num}")
+    for path in (lock_file, socket_file):
+        if path.exists():
+            log.info("Removing stale Xvfb file %s", path)
+            path.unlink()
+
+
 async def start_xvfb() -> asyncio.subprocess.Process:
     """Start Xvfb virtual display."""
+    cleanup_stale_xvfb()
     proc = await asyncio.create_subprocess_exec(
         "Xvfb",
         DISPLAY,
@@ -145,9 +192,27 @@ async def start_xvfb() -> asyncio.subprocess.Process:
         "tcp",
         "-nolisten",
         "unix",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started Xvfb (pid=%d)", proc.pid)
     return proc
+
+
+async def wait_for_xvfb(
+    xvfb_proc: asyncio.subprocess.Process,
+) -> None:
+    """Block until Xvfb creates its lock file."""
+    display_num = DISPLAY.lstrip(":")
+    lock_path = Path(f"/tmp/.X{display_num}-lock")
+    while not lock_path.exists():
+        if xvfb_proc.returncode is not None:
+            raise RuntimeError(
+                f"Xvfb exited with code {xvfb_proc.returncode}"
+            )
+        log.debug("Waiting for Xvfb lock %s", lock_path)
+        await asyncio.sleep(XVFB_POLL_INTERVAL_S)
+    log.info("Xvfb is ready (lock %s exists)", lock_path)
 
 
 async def start_fluxbox(
@@ -157,6 +222,8 @@ async def start_fluxbox(
     proc = await asyncio.create_subprocess_exec(
         "fluxbox",
         env=env,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started fluxbox (pid=%d)", proc.pid)
     return proc
@@ -177,6 +244,8 @@ async def start_x11vnc(
         "-rfbportv6",
         "5900",
         env=env,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started x11vnc (pid=%d)", proc.pid)
     return proc
@@ -192,6 +261,8 @@ async def start_websockify(
         "7900",
         "localhost:5900",
         env=env,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started websockify (pid=%d)", proc.pid)
     return proc
@@ -243,6 +314,8 @@ async def start_chrome(
     proc = await asyncio.create_subprocess_exec(
         *chrome_args,
         env=env,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     log.info("Started Chrome (pid=%d)", proc.pid)
     return proc
@@ -256,6 +329,7 @@ async def main() -> int:
 
     extra_args = sys.argv[1:]
     processes: list[asyncio.subprocess.Process] = []
+    log_tasks: list[asyncio.Task[None]] = []
     shutdown = asyncio.Event()
 
     def on_signal(sig: int) -> None:
@@ -269,11 +343,27 @@ async def main() -> int:
     env = os.environ.copy()
     display_env = {**env, "DISPLAY": DISPLAY}
 
-    processes.append(await start_socat())
-    processes.append(await start_xvfb())
-    processes.append(await start_fluxbox(display_env))
-    processes.append(await start_x11vnc(display_env))
-    processes.append(await start_websockify(display_env))
+    proc = await start_socat()
+    processes.append(proc)
+    log_tasks.extend(pipe_process_output("socat", proc))
+
+    xvfb_proc = await start_xvfb()
+    processes.append(xvfb_proc)
+    log_tasks.extend(pipe_process_output("xvfb", xvfb_proc))
+
+    await wait_for_xvfb(xvfb_proc)
+
+    proc = await start_fluxbox(display_env)
+    processes.append(proc)
+    log_tasks.extend(pipe_process_output("fluxbox", proc))
+
+    proc = await start_x11vnc(display_env)
+    processes.append(proc)
+    log_tasks.extend(pipe_process_output("x11vnc", proc))
+
+    proc = await start_websockify(display_env)
+    processes.append(proc)
+    log_tasks.extend(pipe_process_output("websockify", proc))
 
     dbus_address = await start_dbus()
 
@@ -285,9 +375,15 @@ async def main() -> int:
 
     extension_paths = setup_extensions()
 
-    chrome_env = {**display_env, "DBUS_SESSION_BUS_ADDRESS": dbus_address}
-    chrome_proc = await start_chrome(chrome_env, extension_paths, extra_args)
+    chrome_env = {
+        **display_env,
+        "DBUS_SESSION_BUS_ADDRESS": dbus_address,
+    }
+    chrome_proc = await start_chrome(
+        chrome_env, extension_paths, extra_args
+    )
     processes.append(chrome_proc)
+    log_tasks.extend(pipe_process_output("chrome", chrome_proc))
 
     # Wait for shutdown signal or Chrome exit
     chrome_task = asyncio.create_task(chrome_proc.wait())
@@ -299,10 +395,16 @@ async def main() -> int:
     )
 
     if chrome_task in done:
-        log.warning("Chrome exited with code %d", chrome_proc.returncode)
+        log.warning(
+            "Chrome exited with code %d", chrome_proc.returncode
+        )
 
     log.info("Shutting down all processes")
     await terminate_all(processes)
+
+    for task in log_tasks:
+        task.cancel()
+
     log.info("Shutdown complete")
     return 0
 
